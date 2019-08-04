@@ -1,4 +1,4 @@
-package main
+package hello
 
 import (
 	"log"
@@ -13,7 +13,7 @@ var (
 )
 
 func getLevel() zapcore.Level {
-	switch level := config.Log.Level; level {
+	switch level := ServerConfig.Log.Level; level {
 	case "debug":
 		return zapcore.DebugLevel
 	case "info":
@@ -32,7 +32,7 @@ func init() {
 	logger, err = zap.Config{
 		Encoding:    "json",
 		Level:       zap.NewAtomicLevelAt(getLevel()),
-		OutputPaths: []string{config.Log.File},
+		OutputPaths: []string{ServerConfig.Log.File},
 		EncoderConfig: zapcore.EncoderConfig{
 			MessageKey: "server",
 		},
@@ -42,8 +42,8 @@ func init() {
 	}
 }
 
-func logResponse(r *http.Request, status int) {
-	logger.Info(config.Web.Name,
+func LogResponse(r *http.Request, status int) {
+	logger.Info(ServerConfig.Web.Name,
 		zap.String("proto", r.Proto),
 		zap.String("method", r.Method),
 		zap.String("from", r.RemoteAddr),

@@ -1,4 +1,4 @@
-package main
+package hello
 
 import (
 	"io/ioutil"
@@ -21,16 +21,16 @@ type Config struct {
 }
 
 var (
-	config Config
+	ServerConfig Config
 )
 
 func init() {
-	yamlFile, err := ioutil.ReadFile("conf.yaml")
+	yamlFile, err := ioutil.ReadFile("configs/conf.yaml")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	err = yaml.Unmarshal(yamlFile, &config)
+	err = yaml.Unmarshal(yamlFile, &ServerConfig)
 	if err != nil {
 		log.Fatal(err)
 	}

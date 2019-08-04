@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package pb;
+
+import "google/protobuf/timestamp.proto";
+
+message Event {
+  string name = 1;
+  google.protobuf.Timestamp beginning = 2;
+  google.protobuf.Timestamp end = 3;
+
+  enum Type {
+    MEETING = 0;
+    REMINDER = 1;
+    OTHER = 2;
+  }
+  Type eventType = 4;
+}
+
