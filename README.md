@@ -5,12 +5,6 @@
 >>> go get -u github.com/antik9/microservice-go
 ```
 
-### Run server
-
-```bash
->>> microservice-go
-```
-
 ### Configuration
 
 ```yaml
