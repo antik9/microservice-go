@@ -1,20 +1,14 @@
-## Hello World server
+## Calendar server
 
 ### Get a Repo
 ```bash
 >>> go get -u github.com/antik9/microservice-go
 ```
 
-### Configuration
+### Run
 
-```yaml
----
-web:
-    name: HelloWorldServer
-    port: 8090
-    host: localhost
+```bash
+>>> microservice-go -mode server
 
-log:
-    level: debug
-    file: stdout
+>>> microservice-go -mode client
 ```

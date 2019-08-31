@@ -4,6 +4,13 @@ package pb;
 
 import "google/protobuf/timestamp.proto";
 
+service EventService {
+	rpc AddEvent (Event) returns (Empty) {};
+	rpc RemoveEvent (Event) returns (Empty) {};
+	rpc UpdateEvent (Event) returns (Empty) {};
+	rpc PrintAll (Empty) returns (Response) {};
+}
+
 message Event {
   string name = 1;
   google.protobuf.Timestamp beginning = 2;
@@ -17,3 +24,10 @@ message Event {
   Type eventType = 4;
 }
 
+message Empty {
+
+}
+
+message Response {
+    string resp = 1;
+}

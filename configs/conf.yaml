@@ -1,9 +1,0 @@
----
-web:
-    name: HelloWorldServer
-    port: 8090
-    host: localhost
-
-log:
-    level: debug
-    file: stdout
