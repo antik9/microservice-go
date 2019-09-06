@@ -9,38 +9,17 @@ import (
 	"net"
 	"time"
 
+	"github.com/antik9/microservice-go/internal/backends/database"
+	"github.com/antik9/microservice-go/internal/backends/memory"
 	"github.com/antik9/microservice-go/internal/events"
+	"github.com/antik9/microservice-go/internal/server"
 	"github.com/antik9/microservice-go/pkg/pb"
 	"google.golang.org/grpc"
 )
 
-// Server is implementation of EventService
-type Server struct {
-	calendar events.Calendar
-}
-
-// AddEvent adds event to inner calendar
-func (s *Server) AddEvent(c context.Context, e *pb.Event) (*pb.Empty, error) {
-	return &pb.Empty{}, s.calendar.Add(events.EventFromProto(e))
-}
-
-// RemoveEvent removes event to inner calendar
-func (s *Server) RemoveEvent(c context.Context, e *pb.Event) (*pb.Empty, error) {
-	return &pb.Empty{}, s.calendar.Remove(events.EventFromProto(e))
-}
-
-// UpdateEvent updates event to inner calendar
-func (s *Server) UpdateEvent(c context.Context, e *pb.Event) (*pb.Empty, error) {
-	return &pb.Empty{}, s.calendar.Update(events.EventFromProto(e))
-}
-
-// PrintAll prints days and theirs events from inner calendar
-func (s *Server) PrintAll(c context.Context, e *pb.Empty) (*pb.Response, error) {
-	return &pb.Response{Resp: s.calendar.Print()}, nil
-}
-
 func main() {
 	mode := flag.String("mode", "server", "mode can be `server` or `client`")
+	database := flag.String("db", "memory", "database can be `postgres` or `memory`")
 	flag.Parse()
 
 	if *mode == "server" {
@@ -50,8 +29,19 @@ func main() {
 		}
 		defer sock.Close()
 
+		var calendar events.Calendar
+		if *database == "memory" {
+			calendar, err = memory.NewCalendar()
+		} else {
+			calendar, err = db.NewCalendar()
+		}
+
+		if err != nil {
+			log.Fatalf("cannot instantiate calendar %v", err)
+		}
+
 		grpcServer := grpc.NewServer()
-		pb.RegisterEventServiceServer(grpcServer, &Server{events.NewCalendar()})
+		pb.RegisterEventServiceServer(grpcServer, &server.Server{Calendar: calendar})
 		grpcServer.Serve(sock)
 	} else {
 		conn, err := grpc.Dial("localhost:50051", grpc.WithInsecure())
