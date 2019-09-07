@@ -2,18 +2,14 @@
 
 ### Get a Repo
 ```bash
->>> go get -u github.com/antik9/microservice-go
+>>> git clone https://github.com/antik9/microservice-go.git
+>>> cd microservice-go
 ```
 
 ### Build
 
 ```bash
 >>> make
-```
-
-### Uninstall
-```bash
->>> make clean
 ```
 
 ### Run
