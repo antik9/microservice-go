@@ -5,12 +5,23 @@
 >>> go get -u github.com/antik9/microservice-go
 ```
 
-### Run
+### Build
 
 ```bash
->>> microservice-go -mode server -db postgres # or -db memory
+>>> make
+```
 
->>> microservice-go -mode client
+### Uninstall
+```bash
+>>> make clean
+```
+
+### Run
+
+```
+>>> calendar-migrate # run migrations on postgres database
+>>> calendar-server -db postgres # or -db memory
+>>> calendar-client
 ```
 
 ### Configuration Example

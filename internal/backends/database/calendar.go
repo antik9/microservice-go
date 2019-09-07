@@ -13,16 +13,6 @@ import (
 	_ "github.com/lib/pq"
 )
 
-const schema = `
-CREATE TABLE IF NOT EXISTS events (
-	day DATE,
-	beginning TIMESTAMP,
-	endofevent TIMESTAMP,
-	name VARCHAR(255),
-	eventtype INTEGER
-)
-`
-
 // DatabaseCalendar is a struct with connection to database
 type DatabaseCalendar struct {
 	conn *sqlx.DB
@@ -41,20 +31,16 @@ func NewCalendar() (*DatabaseCalendar, error) {
 	if err != nil {
 		log.Fatalf("cannot connect to database, %v", err)
 	}
-	db.MustExec(schema)
 	return &DatabaseCalendar{conn: db}, nil
 }
 
 // Add is a function to add event to a calendar
 func (c *DatabaseCalendar) Add(e events.Event) error {
-	tx := c.conn.MustBegin()
-	defer tx.Commit()
-
-	plannedEvents := getEventsAtDay(tx, e.Day)
+	plannedEvents := getEventsAtDay(c.conn, e.Day)
 	if _, present := e.IndexOfEvent(plannedEvents); present {
 		return errors.New("event is already present")
 	}
-	tx.MustExec(
+	c.conn.MustExec(
 		`INSERT INTO events (day, beginning, endofevent, name, eventtype)
 		VALUES ($1, $2, $3, $4, $5)`,
 		e.Day.Format(events.DayFormat), e.Beginning.Format(events.TimeFormat),
@@ -62,11 +48,10 @@ func (c *DatabaseCalendar) Add(e events.Event) error {
 	return nil
 }
 
-func getEventsAtDay(tx *sqlx.Tx, d time.Time) []events.Event {
+func getEventsAtDay(db *sqlx.DB, d time.Time) []events.Event {
 	plannedEvents := []events.Event{}
-	err := tx.Select(
+	err := db.Select(
 		&plannedEvents, "SELECT * FROM events WHERE day = $1", d.Format(events.DayFormat))
-
 	if err != nil {
 		log.Fatalf("cannot execute query, %v", err)
 	}
@@ -95,14 +80,11 @@ func (c *DatabaseCalendar) Print() string {
 
 // Remove is a function to remove event from a calendar
 func (c *DatabaseCalendar) Remove(e events.Event) error {
-	tx := c.conn.MustBegin()
-	defer tx.Commit()
-
-	plannedEvents := getEventsAtDay(tx, e.Day)
+	plannedEvents := getEventsAtDay(c.conn, e.Day)
 	if _, present := e.IndexOfEvent(plannedEvents); !present {
 		return errors.New("event is absent")
 	}
-	tx.MustExec(
+	c.conn.MustExec(
 		"DELETE FROM events WHERE name = $1 AND day = $2",
 		e.Name, e.Day.Format(events.DayFormat))
 	return nil
@@ -110,14 +92,11 @@ func (c *DatabaseCalendar) Remove(e events.Event) error {
 
 // Update is a function to update event in a calendar
 func (c *DatabaseCalendar) Update(e events.Event) error {
-	tx := c.conn.MustBegin()
-	defer tx.Commit()
-
-	plannedEvents := getEventsAtDay(tx, e.Day)
+	plannedEvents := getEventsAtDay(c.conn, e.Day)
 	if _, present := e.IndexOfEvent(plannedEvents); !present {
 		return errors.New("event is absent")
 	}
-	tx.MustExec(
+	c.conn.MustExec(
 		`UPDATE events SET beginning = $1, endofevent = $2, eventtype = $3
 			WHERE name = $4 AND day = $5`,
 		e.Beginning.Format(events.TimeFormat),
