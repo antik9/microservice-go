@@ -3,6 +3,8 @@
 package events
 
 import (
+	"errors"
+	"strings"
 	"time"
 
 	"github.com/antik9/microservice-go/pkg/pb"
@@ -15,6 +17,7 @@ type Event struct {
 	End       time.Time `db:"endofevent"`
 	Name      string    `db:"name"`
 	EventType int       `db:"eventtype"`
+	IsSent    bool      `db:"is_sent"`
 }
 
 // EventFromProto converts proto structure to Event struct
@@ -30,6 +33,31 @@ func EventFromProto(e *pb.Event) Event {
 		EventType: int(e.EventType)}
 }
 
+// ParseFromInput converts input string to Event or return an occuring error
+func ParseFromInput(msg string) (*Event, error) {
+	parts := strings.Split(msg, " - ")
+	if len(parts) == 4 {
+		location, _ := time.LoadLocation("Europe/Moscow")
+		beggining, err1 := time.ParseInLocation(TimeFormat, parts[0], location)
+		end, err2 := time.ParseInLocation(TimeFormat, parts[1], location)
+		eventType := 2
+
+		switch strings.Trim(parts[3], "\n\r\t ") {
+		case "MEETING":
+			eventType = 0
+		case "REMINDER":
+			eventType = 1
+		default:
+			eventType = 2
+		}
+
+		if err1 == nil && err2 == nil {
+			return NewEvent(beggining.Local(), end.Local(), parts[2], eventType), nil
+		}
+	}
+	return nil, errors.New("bad format")
+}
+
 // Proto method convert Event back to protobuf structure
 func (e Event) Proto() *pb.Event {
 	return &pb.Event{
@@ -40,11 +68,11 @@ func (e Event) Proto() *pb.Event {
 }
 
 // NewEvent creates Event instance
-func NewEvent(beginning, end time.Time, name string, eventType int) Event {
+func NewEvent(beginning, end time.Time, name string, eventType int) *Event {
 	t := time.Unix(beginning.Unix(), 0)
 	d, _ := time.Parse(DayFormat, t.Format(DayFormat))
 
-	return Event{
+	return &Event{
 		Day:       d,
 		Beginning: beginning,
 		End:       end,

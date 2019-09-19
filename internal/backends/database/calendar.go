@@ -41,10 +41,10 @@ func (c *DatabaseCalendar) Add(e events.Event) error {
 		return errors.New("event is already present")
 	}
 	c.conn.MustExec(
-		`INSERT INTO events (day, beginning, endofevent, name, eventtype)
-		VALUES ($1, $2, $3, $4, $5)`,
+		`INSERT INTO events (day, beginning, endofevent, name, eventtype, is_sent)
+		VALUES ($1, $2, $3, $4, $5, $6)`,
 		e.Day.Format(events.DayFormat), e.Beginning.Format(events.TimeFormat),
-		e.End.Format(events.TimeFormat), e.Name, e.EventType)
+		e.End.Format(events.TimeFormat), e.Name, e.EventType, e.IsSent)
 	return nil
 }
 
@@ -52,6 +52,18 @@ func getEventsAtDay(db *sqlx.DB, d time.Time) []events.Event {
 	plannedEvents := []events.Event{}
 	err := db.Select(
 		&plannedEvents, "SELECT * FROM events WHERE day = $1", d.Format(events.DayFormat))
+	if err != nil {
+		log.Fatalf("cannot execute query, %v", err)
+	}
+	return plannedEvents
+}
+
+func (c *DatabaseCalendar) GetImmediateEvents() []events.Event {
+	plannedEvents := []events.Event{}
+	err := c.conn.Select(
+		&plannedEvents,
+		"SELECT * FROM events WHERE beginning <= $1 AND is_sent IS FALSE",
+		time.Now().Format(events.TimeFormat))
 	if err != nil {
 		log.Fatalf("cannot execute query, %v", err)
 	}
@@ -97,10 +109,10 @@ func (c *DatabaseCalendar) Update(e events.Event) error {
 		return errors.New("event is absent")
 	}
 	c.conn.MustExec(
-		`UPDATE events SET beginning = $1, endofevent = $2, eventtype = $3
-			WHERE name = $4 AND day = $5`,
+		`UPDATE events SET beginning = $1, endofevent = $2, eventtype = $3, is_sent = $4
+			WHERE name = $5 AND day = $6`,
 		e.Beginning.Format(events.TimeFormat),
-		e.End.Format(events.TimeFormat), e.EventType,
+		e.End.Format(events.TimeFormat), e.EventType, e.IsSent,
 		e.Name, e.Day.Format(events.DayFormat))
 	return nil
 }

@@ -35,13 +35,25 @@ func (c *InMemoryCalendar) Add(e events.Event) error {
 	return nil
 }
 
+func (c *InMemoryCalendar) GetImmediateEvents() []events.Event {
+	now := time.Now()
+	d, _ := time.Parse(events.DayFormat, now.Format(events.DayFormat))
+	plannedEvents := []events.Event{}
+	for _, event := range c.db[d] {
+		if event.Beginning.Unix() < now.Unix() && !event.IsSent {
+			plannedEvents = append(plannedEvents, event)
+		}
+	}
+	return plannedEvents
+}
+
 func (c *InMemoryCalendar) Print() string {
 	c.Lock()
 	defer c.Unlock()
 
 	var builder strings.Builder
 	for day, events := range c.db {
-		builder.WriteString(day.Format("2016/1/2") + "\n")
+		builder.WriteString(day.Format("2006/01/02") + "\n")
 		for _, event := range events {
 			builder.WriteString("\tfrom ")
 			builder.WriteString(event.Beginning.Format(time.UnixDate))

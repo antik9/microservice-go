@@ -2,7 +2,6 @@
 package main
 
 import (
-	"flag"
 	"log"
 	"net"
 
@@ -13,16 +12,13 @@ import (
 )
 
 func main() {
-	database := flag.String("db", "memory", "database can be `postgres` or `memory`")
-	flag.Parse()
-
 	sock, err := net.Listen("tcp", "0.0.0.0:50051")
 	if err != nil {
 		log.Fatalf("failed to listen %v", err)
 	}
 	defer sock.Close()
 
-	calendar, err := backend.NewCalendar(*database)
+	calendar, err := backend.NewCalendar()
 	if err != nil {
 		log.Fatalf("cannot instantiate calendar %v", err)
 	}

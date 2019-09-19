@@ -3,3 +3,10 @@ database:
     username:
     host:
     password:
+    backend:
+
+rabbit:
+    host:
+    port:
+    username:
+    password:

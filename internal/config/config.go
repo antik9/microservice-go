@@ -14,7 +14,15 @@ type Config struct {
 		Username string `yaml:"username"`
 		Host     string `yaml:"host"`
 		Password string `yaml:"password"`
+		Backend  string `yaml:"backend"`
 	} `yaml:"database"`
+
+	Rabbit struct {
+		Host     string `yaml:"host"`
+		Port     string `yaml:"port"`
+		Username string `yaml:"username"`
+		Password string `yaml:"password"`
+	} `yaml:"rabbit"`
 }
 
 var (

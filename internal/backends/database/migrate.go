@@ -6,7 +6,8 @@ CREATE TABLE IF NOT EXISTS events (
 	beginning TIMESTAMP,
 	endofevent TIMESTAMP,
 	name VARCHAR(255),
-	eventtype INTEGER
+	eventtype INTEGER,
+	is_sent BOOLEAN
 )
 `
 
