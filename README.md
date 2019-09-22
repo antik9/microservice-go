@@ -1,5 +1,13 @@
 ## Calendar server
 
+### Menu
+
+- [Get a Repo](#get-a-repo)
+- [Build](#build)
+- [Run](#run)
+- [Run With Docker](#run-with-docker)
+- [Configuration Example](#configuration-example)
+
 ### Get a Repo
 ```bash
 >>> git clone https://github.com/antik9/microservice-go.git
@@ -20,6 +28,11 @@
 >>> calendar-client # create your own events
 >>> calendar-enqueue # enqueue coming events to rabbitmq
 >>> calendar-dequeue # dequeue coming events from rabbitmq and print to console
+```
+
+### Run With Docker
+```
+>>> cd docker && docker-compose up
 ```
 
 ### Configuration Example
