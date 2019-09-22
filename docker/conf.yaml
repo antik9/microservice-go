@@ -1,0 +1,12 @@
+database:
+    name: calendar
+    username: calendar
+    host: postgres
+    password: calendar
+    backend: postgres
+
+rabbit:
+    host: rabbit
+    port: 5672
+    username: guest
+    password: guest

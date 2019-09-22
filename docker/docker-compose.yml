@@ -1,0 +1,60 @@
+version: "3.7"
+services:
+    server:
+        image: antik9/calendar-server
+        networks:
+            - overlay
+        ports:
+            - "50051:50051"
+        restart: on-failure
+        depends_on:
+            - "migrate"
+            - "postgres"
+
+    enqueue:
+        image: antik9/calendar-enqueue
+        networks:
+            - overlay
+        restart: on-failure
+        depends_on:
+            - "migrate"
+            - "postgres"
+            - "rabbit"
+
+    migrate:
+        image: antik9/calendar-migrate
+        networks:
+            - overlay
+        restart: on-failure
+        depends_on:
+            - "postgres"
+
+    dequeue:
+        image: antik9/calendar-dequeue
+        networks:
+            - overlay
+        restart: on-failure
+        depends_on:
+            - "rabbit"
+
+    postgres:
+        image: postgres:11.5
+        environment:
+            POSTGRES_PASSWORD: calendar
+            POSTGRES_USER: calendar
+            POSTGRES_DB: calendar
+        networks:
+            - overlay
+        volumes:
+            - db-data:/var/lib/postgresql/data
+
+    rabbit:
+        image: rabbitmq:3.7.18
+        networks:
+            - overlay
+
+volumes:
+    db-data:
+
+networks:
+    overlay:
