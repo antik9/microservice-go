@@ -8,6 +8,8 @@ const (
 // Calendar is an interface for keeping events
 type Calendar interface {
 	Add(e Event) error
+	Clear()
+	GetAllEvents() []Event
 	GetImmediateEvents() []Event
 	Print() string
 	Remove(e Event) error

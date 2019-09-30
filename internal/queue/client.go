@@ -11,7 +11,7 @@ import (
 type Client struct {
 	conn     *amqp.Connection
 	channel  *amqp.Channel
-	messages *<-chan amqp.Delivery
+	messages <-chan amqp.Delivery
 	queue    amqp.Queue
 }
 
@@ -34,14 +34,14 @@ func NewClient(clientType string) *Client {
 	if err != nil {
 		log.Fatalf("%s", err)
 	}
-	var messages *<-chan amqp.Delivery
+	var messages <-chan amqp.Delivery
 
 	if clientType == "consumer" {
 		msgs, err := ch.Consume(q.Name, "", false, false, false, false, nil)
 		if err != nil {
 			log.Fatalf("%s", err)
 		}
-		messages = &msgs
+		messages = msgs
 	}
 	return &Client{
 		conn:     conn,
@@ -72,7 +72,7 @@ func (c *Client) SendMessage(message string) {
 }
 
 func (c *Client) ReadMessage() string {
-	message := <-*c.messages
+	message := <-c.messages
 	defer message.Ack(false)
 	return string(message.Body)
 }

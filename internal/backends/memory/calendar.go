@@ -35,6 +35,20 @@ func (c *InMemoryCalendar) Add(e events.Event) error {
 	return nil
 }
 
+func (c *InMemoryCalendar) Clear() {
+	c.db = map[time.Time][]events.Event{}
+}
+
+func (c *InMemoryCalendar) GetAllEvents() []events.Event {
+	allEvents := []events.Event{}
+	for _, eventsOnDay := range c.db {
+		for _, event := range eventsOnDay {
+			allEvents = append(allEvents, event)
+		}
+	}
+	return allEvents
+}
+
 func (c *InMemoryCalendar) GetImmediateEvents() []events.Event {
 	now := time.Now()
 	d, _ := time.Parse(events.DayFormat, now.Format(events.DayFormat))

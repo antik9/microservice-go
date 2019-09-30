@@ -37,6 +37,15 @@ services:
         depends_on:
             - "rabbit"
 
+    test:
+        image: antik9/calendar-test
+        networks:
+            - overlay
+        depends_on:
+            - "server"
+            - "dequeue"
+            - "migrate"
+
     postgres:
         image: postgres:11.5
         environment:

@@ -48,6 +48,10 @@ func (c *DatabaseCalendar) Add(e events.Event) error {
 	return nil
 }
 
+func (c *DatabaseCalendar) Clear() {
+	c.conn.MustExec("DELETE FROM events")
+}
+
 func getEventsAtDay(db *sqlx.DB, d time.Time) []events.Event {
 	plannedEvents := []events.Event{}
 	err := db.Select(
@@ -56,6 +60,15 @@ func getEventsAtDay(db *sqlx.DB, d time.Time) []events.Event {
 		log.Fatalf("cannot execute query, %v", err)
 	}
 	return plannedEvents
+}
+
+func (c *DatabaseCalendar) GetAllEvents() []events.Event {
+	allEvents := []events.Event{}
+	err := c.conn.Select(&allEvents, "SELECT * FROM events")
+	if err != nil {
+		log.Fatalf("cannot execute query, %v", err)
+	}
+	return allEvents
 }
 
 func (c *DatabaseCalendar) GetImmediateEvents() []events.Event {
