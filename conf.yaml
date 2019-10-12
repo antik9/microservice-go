@@ -10,3 +10,7 @@ rabbit:
     port:
     username:
     password:
+
+prometheus:
+    dequeue_metrics:
+    server_metrics:

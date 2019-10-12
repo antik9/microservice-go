@@ -57,6 +57,15 @@ services:
         volumes:
             - db-data:/var/lib/postgresql/data
 
+    prometheus:
+        image: prom/prometheus:v2.13.0
+        volumes: ./prometheus.yml:/etc/prometheus/prometheus.yml
+        networks:
+            - overlay
+        depends_on:
+            - server
+            - dequeue
+
     rabbit:
         image: rabbitmq:3.7.18
         networks:

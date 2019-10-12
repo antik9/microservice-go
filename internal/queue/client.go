@@ -5,6 +5,7 @@ import (
 	"log"
 
 	"github.com/antik9/microservice-go/internal/config"
+	"github.com/antik9/microservice-go/internal/metrics"
 	"github.com/streadway/amqp"
 )
 
@@ -73,6 +74,7 @@ func (c *Client) SendMessage(message string) {
 
 func (c *Client) ReadMessage() string {
 	message := <-c.messages
+	defer metrics.Observe(metrics.SendEvent, 0)
 	defer message.Ack(false)
 	return string(message.Body)
 }

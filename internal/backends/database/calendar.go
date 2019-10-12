@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"strconv"
 	"strings"
 	"time"
 
@@ -50,6 +51,18 @@ func (c *DatabaseCalendar) Add(e events.Event) error {
 
 func (c *DatabaseCalendar) Clear() {
 	c.conn.MustExec("DELETE FROM events")
+}
+
+func (c *DatabaseCalendar) Count() int {
+	var value string
+	c.conn.MustExec(
+		value,
+		`SELECT analyze_count FROM pg_stat_user_tables WHERE relname = 'events'`,
+	)
+	if count, ok := strconv.Atoi(value); ok == nil {
+		return count
+	}
+	return 0
 }
 
 func getEventsAtDay(db *sqlx.DB, d time.Time) []events.Event {

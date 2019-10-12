@@ -9,6 +9,7 @@ const (
 type Calendar interface {
 	Add(e Event) error
 	Clear()
+	Count() int
 	GetAllEvents() []Event
 	GetImmediateEvents() []Event
 	Print() string

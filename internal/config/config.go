@@ -23,6 +23,11 @@ type Config struct {
 		Username string `yaml:"username"`
 		Password string `yaml:"password"`
 	} `yaml:"rabbit"`
+
+	Prometheus struct {
+		Dequeue string `yaml:"dequeue_metrics"`
+		Server  string `yaml:"server_metrics"`
+	} `ysml:"prometheus"`
 }
 
 var (

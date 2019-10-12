@@ -39,6 +39,10 @@ func (c *InMemoryCalendar) Clear() {
 	c.db = map[time.Time][]events.Event{}
 }
 
+func (c *InMemoryCalendar) Count() int {
+	return len(c.db)
+}
+
 func (c *InMemoryCalendar) GetAllEvents() []events.Event {
 	allEvents := []events.Event{}
 	for _, eventsOnDay := range c.db {

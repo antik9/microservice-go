@@ -50,4 +50,8 @@ rabbit:
    password: guest
    host: localhost
    port: 5672
+
+prometheus:
+  server_metrics: "0.0.0.0:2112"
+  dequeue_metrics: "0.0.0.0:2113"
 ```
