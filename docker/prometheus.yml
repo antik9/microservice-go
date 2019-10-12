@@ -2,4 +2,9 @@ scrape_configs:
   - job_name: 'prometheus'
     scrape_interval: 1s
     static_configs:
-        - targets: ['localhost:2112', 'localhost:2113']
+        - targets: ['server:2112', 'dequeue:2113']
+
+  - job_name: 'database'
+    scrape_interval: 5s
+    static_configs:
+        - targets: ['postgres_exporter:9187']
