@@ -55,7 +55,7 @@ func (c *DatabaseCalendar) Clear() {
 
 func (c *DatabaseCalendar) Count() int {
 	var value string
-	c.conn.MustExec(
+	c.conn.Select(
 		value,
 		`SELECT analyze_count FROM pg_stat_user_tables WHERE relname = 'events'`,
 	)
